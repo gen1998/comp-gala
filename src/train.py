@@ -128,20 +128,20 @@ class Model:
 
     def test(self):
         submission = pd.read_csv("dataset/sample_submission.csv", index_col=0)
-        self.model.load_weights('src/result/weights/weights.h5')
+        self.model.load_weights('src/result/weights/{}_weights.h5'.format(self.practice_name))
         filenames = list(submission["Image"].values)
 
         for name in filenames:
             image = Image.open("dataset/test/"+name)
             image = image.convert("RGB")
             image = np.asarray(image, dtype=np.float32)
-            image = cv2.resize(image, (80, 80))
+            image = cv2.resize(image, (self.image_size, self.image_size))
             image /= 255
             image = np.expand_dims(image, 0)
             result = np.array(self.model.predict(image, batch_size=1, verbose=0)[0])
             submission.loc[submission["Image"] == name, "Class"] = self.data_classes[np.argmax(result)]
 
-        submission.to_csv("src/result/submission.csv", index=False)
+        submission.to_csv("src/result/{}_submission.csv".format(self.practice_name), index=False)
 
     def VGG16(self):
         input_shape = (self.image_size, self.image_size, 3)
