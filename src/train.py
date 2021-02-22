@@ -49,6 +49,7 @@ class Model:
             img = cv2.resize(img, (self.image_size, self.image_size))
             if np.random.rand() <= 0.8:
                 cv2.imwrite(os.path.join("dataset/train", img_class, name), img)
+                cv2.imwrite(os.path.join("dataset/train", img_class, "f_"+name), cv2.flip(img, 1))
             else:
                 cv2.imwrite(os.path.join("dataset/validation", img_class, name), img)
 
