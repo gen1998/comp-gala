@@ -50,6 +50,9 @@ class Model:
             if np.random.rand() <= 0.8:
                 cv2.imwrite(os.path.join("dataset/train", img_class, name), img)
                 cv2.imwrite(os.path.join("dataset/train", img_class, "f_"+name), cv2.flip(img, 1))
+                cv2.imwrite(os.path.join("dataset/train", img_class, "90_"+name), cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE))
+                cv2.imwrite(os.path.join("dataset/train", img_class, "270_"+name), cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE))
+                cv2.imwrite(os.path.join("dataset/train", img_class, "180_"+name),cv2.rotate(img, cv2.ROTATE_180))
             else:
                 cv2.imwrite(os.path.join("dataset/validation", img_class, name), img)
 
@@ -120,7 +123,7 @@ class Model:
                                            validation_steps=valid_num // self.batch_size,
                                            epochs=self.epoch_size,
                                            workers=32,
-                                           max_queue_size=32,)
+                                           max_queue_size=32)
 
         self.model.save_weights('src/result/weights/{}_weights.h5'.format(self.practice_name))
 
@@ -142,7 +145,7 @@ class Model:
             result = np.array(self.model.predict(image, batch_size=1, verbose=0)[0])
             submission.loc[submission["Image"] == name, "Class"] = self.data_classes[np.argmax(result)]
 
-        submission.to_csv("src/result/{}_submission.csv".format(self.practice_name), index=False)
+        submission.to_csv("src/result/submission/{}_submission.csv".format(self.practice_name), index=False)
 
     def VGG16(self):
         input_shape = (self.image_size, self.image_size, 3)
