@@ -15,10 +15,11 @@ from keras.callbacks import LearningRateScheduler
 
 
 class Model:
-    def __init__(self, practie_name, operation, image_size=80, num_classes=4):
+    def __init__(self, practie_name, operation, image_size_x=80, image_size_y=80, num_classes=4):
         self.practice_name = practie_name
         self.num_files = {}
-        self.image_size = image_size
+        self.image_size_x = image_size_x
+        self.image_size_y = image_size_y
         self.num_classes = num_classes
         self.batch_size = 0
         self.epoch_size = 0
@@ -46,13 +47,10 @@ class Model:
         for name in imgs:
             img = cv2.imread(os.path.join("dataset/Train_Images/", name))
             img_class = train_csv.loc[name][0]
-            img = cv2.resize(img, (self.image_size, self.image_size))
+            img = cv2.resize(img, (self.image_size_x, self.image_size_y))
             if np.random.rand() <= 0.8:
                 cv2.imwrite(os.path.join("dataset/train", img_class, name), img)
                 cv2.imwrite(os.path.join("dataset/train", img_class, "f_"+name), cv2.flip(img, 1))
-                cv2.imwrite(os.path.join("dataset/train", img_class, "90_"+name), cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE))
-                cv2.imwrite(os.path.join("dataset/train", img_class, "270_"+name), cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE))
-                cv2.imwrite(os.path.join("dataset/train", img_class, "180_"+name),cv2.rotate(img, cv2.ROTATE_180))
             else:
                 cv2.imwrite(os.path.join("dataset/validation", img_class, name), img)
 
@@ -65,14 +63,14 @@ class Model:
 
         train_generator = datagen.flow_from_directory(
             os.path.join("dataset/train"),
-            target_size=(self.image_size, self.image_size),
+            target_size=(self.image_size_x, self.image_size_y),
             batch_size=self.batch_size,
             classes=self.data_classes,
             class_mode="categorical")
 
         validation_generator = datagen.flow_from_directory(
             os.path.join("dataset/validation"),
-            target_size=(self.image_size, self.image_size),
+            target_size=(self.image_size_x, self.image_size_y),
             batch_size=self.batch_size,
             classes=self.data_classes,
             class_mode="categorical")
@@ -139,7 +137,7 @@ class Model:
             image = Image.open("dataset/test/"+name)
             image = image.convert("RGB")
             image = np.asarray(image, dtype=np.float32)
-            image = cv2.resize(image, (self.image_size, self.image_size))
+            image = cv2.resize(image, (self.image_size_x, self.image_size_y))
             image /= 255
             image = np.expand_dims(image, 0)
             result = np.array(self.model.predict(image, batch_size=1, verbose=0)[0])
@@ -148,7 +146,7 @@ class Model:
         submission.to_csv("src/result/submission/{}_submission.csv".format(self.practice_name), index=False)
 
     def VGG16(self):
-        input_shape = (self.image_size, self.image_size, 3)
+        input_shape = (self.image_size_x, self.image_size_y, 3)
         model = Sequential()
         model.add(Conv2D(filters=64, kernel_size=(3,3), strides=(1,1), padding='same', input_shape=input_shape, name='block1_conv1'))
         model.add(BatchNormalization(name='bn1'))
@@ -212,7 +210,7 @@ class Model:
 
     # VGG16 for mac
     def VGG16_mac(self):
-        input_shape = (self.image_size, self.image_size, 3)
+        input_shape = (self.image_size_x, self.image_size_y, 3)
         model = Sequential()
         model.add(Conv2D(filters=64, kernel_size=(3,3), strides=(1,1), padding='same', input_shape=input_shape, name='block1_conv1'))
         model.add(BatchNormalization(name='bn1'))
