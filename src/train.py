@@ -32,6 +32,9 @@ class Model:
         if os.path.exists("dataset/train/"):
             shutil.rmtree("dataset/train/")
 
+        if os.path.exists("dataset/validation/"):
+            shutil.rmtree("dataset/validation/")
+
         for cla in self.data_classes:
             os.makedirs("dataset/train/"+cla)
             os.makedirs("dataset/validation/"+cla)
