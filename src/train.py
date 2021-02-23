@@ -234,7 +234,7 @@ class Model:
         model.add(BatchNormalization())
         model.add(Flatten())
         model.add(Dropout(0.4))
-        model.add(Dense(10, activation='softmax'))
+        model.add(Dense(self.num_classes, activation='softmax'))
 
         # COMPILE WITH ADAM OPTIMIZER AND CROSS ENTROPY COST
         model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
