@@ -95,7 +95,12 @@ class Model:
         print("valid_num : ", valid_num)
 
         annealer = LearningRateScheduler(lambda x: 1e-3 * 0.95 ** x)
-        # es_cb = keras.callbacks.EarlyStopping(monitor='val_loss', patience=5, verbose=0, mode='auto')
+        es_cb = keras.callbacks.EarlyStopping(monitor='val_accuracy',
+                                              min_delta=0.01,
+                                              patience=7,
+                                              verbose=0,
+                                              mode='auto',
+                                              restore_best_weights=True)
 
         history = self.model.fit_generator(train_generator,
                                            validation_data=validation_generator,
@@ -105,7 +110,7 @@ class Model:
                                            epochs=self.epoch_size,
                                            workers=32,
                                            max_queue_size=32,
-                                           callbacks=[annealer])
+                                           callbacks=[annealer, es_cb])
 
         self.model.save_weights('src/result/weights/{}_weights.h5'.format(self.practice_name))
 
