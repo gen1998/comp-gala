@@ -24,8 +24,8 @@ class Model:
         self.batch_size = 0
         self.epoch_size = 0
         self.data_classes = ['Attire', 'misc', 'Food', 'Decorationandsignage']
-        #self.model = self.VGG16(operation)
-        self.model = self.mnist_997()
+        self.model = self.VGG16(operation)
+        #self.model = self.mnist_997()
 
     def folder_create(self):
         if os.path.exists("dataset/train/"):
@@ -91,25 +91,7 @@ class Model:
         print("train_num : ", train_num)
         print("valid_num : ", valid_num)
 
-        """
-        cp_cb = ModelCheckpoint(filepath=os.path.join(self.checkpoints_path, category+'checkpoint.h5'),
-                                monitor='val_acc',
-                                verbose=1,
-                                save_best_only=True,
-                                mode='auto'
-        """
-
-        """
-        def lr_schedul(epoch):
-            x = 0.001
-            if epoch >= 40:
-                x = 0.0001
-            if epoch >= 80:
-                x = 0.00001
-            return x
-        """
-
-        # lr_decay = LearningRateScheduler(lr_schedul, verbose=1)
+        annealer = LearningRateScheduler(lambda x: 1e-3 * 0.95 ** x)
         # es_cb = keras.callbacks.EarlyStopping(monitor='val_loss', patience=5, verbose=0, mode='auto')
 
         history = self.model.fit_generator(train_generator,
@@ -119,7 +101,8 @@ class Model:
                                            validation_steps=valid_num // self.batch_size,
                                            epochs=self.epoch_size,
                                            workers=32,
-                                           max_queue_size=32)
+                                           max_queue_size=32,
+                                           callbacks=[annealer])
 
         self.model.save_weights('src/result/weights/{}_weights.h5'.format(self.practice_name))
 
