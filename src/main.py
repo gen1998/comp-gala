@@ -125,19 +125,23 @@ class Main(model.Model):
         with open("src/result/history/{}_history.pickle".format(self.practice_name), 'wb') as fp:
             pickle.dump(history.history, fp)
 
-    def test(self):
+    def test(self, weights):
         submission = pd.read_csv("dataset/sample_submission.csv", index_col=0)
-        self.model.load_weights('src/result/weights/{}_weights.h5'.format(self.practice_name))
         filenames = list(submission["Image"].values)
+        result = np.zeros(len(filenames))
 
-        for name in filenames:
-            image = Image.open("dataset/test/"+name)
-            image = image.convert("RGB")
-            image = np.asarray(image, dtype=np.float32)
-            image = cv2.resize(image, (self.image_size_x, self.image_size_y))
-            image /= 255
-            image = np.expand_dims(image, 0)
-            result = np.array(self.model.predict(image, batch_size=1, verbose=0)[0])
-            submission.loc[submission["Image"] == name, "Class"] = self.data_classes[np.argmax(result)]
+        for weight in weights:
+            self.model.load_weights('src/result/weights/{}_weights.h5'.format(weight))
+            for name in filenames:
+                image = Image.open("dataset/test/"+name)
+                image = image.convert("RGB")
+                image = np.asarray(image, dtype=np.float32)
+                image = cv2.resize(image, (self.image_size_x, self.image_size_y))
+                image /= 255
+                image = np.expand_dims(image, 0)
+                result += np.array(self.model.predict(image, batch_size=1, verbose=0)[0])
+
+        result /= len(weights)
+        submission.loc[submission["Image"] == name, "Class"] = self.data_classes[np.argmax(result)]
 
         submission.to_csv("src/result/submission/{}_submission.csv".format(self.practice_name), index=False)
