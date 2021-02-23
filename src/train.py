@@ -56,6 +56,9 @@ class Model:
     def generator(self):
         datagen = ImageDataGenerator(rescale=1./255,
                                      rotation_range=10,
+                                     zoom_range = 0.10,
+                                     width_shift_range=0.1,
+                                     height_shift_range=0.1,
                                      horizontal_flip=True,
                                      vertical_flip=True)
 
