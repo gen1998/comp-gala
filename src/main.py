@@ -128,7 +128,7 @@ class Main(model.Model):
     def test(self, weights):
         submission = pd.read_csv("dataset/sample_submission.csv", index_col=0)
         filenames = list(submission["Image"].values)
-        result = np.zeros(len(filenames), 4)
+        result = np.zeros((len(filenames), 4))
 
         for weight in weights:
             self.model.load_weights('src/result/weights/{}_weights.h5'.format(weight))
