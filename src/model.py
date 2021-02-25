@@ -114,11 +114,11 @@ class Model():
     def resnet50(self):
         input_tensor = Input(shape=(self.image_size_x, self.image_size_y, 3))
 
-        ResNet50 = ResNet50(include_top=False, weights=None ,input_tensor=input_tensor)
+        Resnet50 = ResNet50(include_top=False, weights=None ,input_tensor=input_tensor)
         top_model = Sequential()
-        top_model.add(Flatten(input_shape=ResNet50.output_shape[1:]))
+        top_model.add(Flatten(input_shape=Resnet50.output_shape[1:]))
         top_model.add(Dense(self.num_classes, activation='softmax'))
-        model = Model(input=ResNet50.input, output=top_model(ResNet50.output))
+        model = Model(input=Resnet50.input, output=top_model(Resnet50.output))
 
         model.compile(loss='categorical_crossentropy',
                       optimizer="adam",
