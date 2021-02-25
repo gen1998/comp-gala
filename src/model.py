@@ -15,7 +15,7 @@ class Model():
         elif model_name == "mnist_997":
             self.model = self.mnist_997()
         elif model_name == "resnet50":
-            self.model = self.ResNet50()
+            self.model = self.resnet50()
 
     def VGG16(self):
         input_shape = (self.image_size_x, self.image_size_y, 3)
@@ -111,7 +111,7 @@ class Model():
 
         return model
 
-    def ResNet50(self):
+    def resnet50(self):
         input_tensor = Input(shape=(self.image_size_x, self.image_size_y, 3))
 
         ResNet50 = ResNet50(include_top=False, weights=None ,input_tensor=input_tensor)
