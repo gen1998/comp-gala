@@ -5,7 +5,7 @@ from keras.layers import Activation, Dropout, Flatten, Dense, BatchNormalization
 from keras.applications.resnet50 import ResNet50
 
 
-class Model():
+class Model_CNN():
     def __init__(self, image_size_x, image_size_y, num_classes, model_name):
         self.image_size_x = image_size_x
         self.image_size_y = image_size_y
