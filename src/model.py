@@ -1,7 +1,9 @@
 import keras
-from keras.models import Sequential
+from keras.models import Sequential, Model
 from keras.layers import Conv2D, MaxPooling2D
-from keras.layers import Activation, Dropout, Flatten, Dense, BatchNormalization
+from keras.layers import Activation, Dropout, Flatten, Dense, BatchNormalization, Input
+from keras.applications.resnet50 import ResNet50
+
 
 class Model():
     def __init__(self, image_size_x, image_size_y, num_classes, model_name):
@@ -12,6 +14,8 @@ class Model():
             self.model = self.VGG16()
         elif model_name == "mnist_997":
             self.model = self.mnist_997()
+        elif model_name == "resnet50":
+            self.model = self.ResNet50()
 
     def VGG16(self):
         input_shape = (self.image_size_x, self.image_size_y, 3)
@@ -101,6 +105,23 @@ class Model():
         model.add(Dense(self.num_classes, activation='softmax'))
 
         # COMPILE WITH ADAM OPTIMIZER AND CROSS ENTROPY COST
-        model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
+        model.compile(optimizer="adam",
+                      loss="categorical_crossentropy",
+                      metrics=["accuracy"])
+
+        return model
+
+    def ResNet50(self):
+        input_tensor = Input(shape=(self.image_size_x, self.image_size_y, 3))
+
+        ResNet50 = ResNet50(include_top=False, weights=None ,input_tensor=input_tensor)
+        top_model = Sequential()
+        top_model.add(Flatten(input_shape=ResNet50.output_shape[1:]))
+        top_model.add(Dense(self.num_classes, activation='softmax'))
+        model = Model(input=ResNet50.input, output=top_model(ResNet50.output))
+
+        model.compile(loss='categorical_crossentropy',
+                      optimizer="adam",
+                      metrics=['accuracy'])
 
         return model
