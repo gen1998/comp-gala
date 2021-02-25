@@ -3,6 +3,7 @@ from keras.models import Sequential, Model
 from keras.layers import Conv2D, MaxPooling2D
 from keras.layers import Activation, Dropout, Flatten, Dense, BatchNormalization, Input
 from keras.applications.resnet50 import ResNet50
+from keras.applications.xception import Xception
 
 
 class Model_CNN():
@@ -16,6 +17,8 @@ class Model_CNN():
             self.model = self.mnist_997()
         elif model_name == "resnet50":
             self.model = self.resnet50()
+        elif model_name == "xception":
+            self.model = self.xception()
 
     def VGG16(self):
         input_shape = (self.image_size_x, self.image_size_y, 3)
@@ -119,6 +122,21 @@ class Model_CNN():
         top_model.add(Flatten(input_shape=Resnet50.output_shape[1:]))
         top_model.add(Dense(self.num_classes, activation='softmax'))
         model = Model(input=Resnet50.input, output=top_model(Resnet50.output))
+
+        model.compile(loss='categorical_crossentropy',
+                      optimizer="adam",
+                      metrics=['accuracy'])
+
+        return model
+
+    def xception(self):
+        input_tensor = Input(shape=(self.image_size_x, self.image_size_y, 3))
+
+        xcep = Xception(include_top=False, weights=None ,input_tensor=input_tensor)
+        top_model = Sequential()
+        top_model.add(Flatten(input_shape=xcep.output_shape[1:]))
+        top_model.add(Dense(self.num_classes, activation='softmax'))
+        model = Model(input=xcep.input, output=top_model(xcep.output))
 
         model.compile(loss='categorical_crossentropy',
                       optimizer="adam",
