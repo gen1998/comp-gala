@@ -14,7 +14,7 @@ from keras.callbacks import LearningRateScheduler
 import src.model as model
 
 
-class Main(model.Model):
+class Main(model.Model_CNN):
     def __init__(self, practie_name, model_name, image_size_x=80, image_size_y=80, num_classes=4):
         super(Main, self).__init__(image_size_x, image_size_y, num_classes, model_name)
         self.practice_name = practie_name
