@@ -2,7 +2,7 @@ import src.main as main
 
 if __name__ == '__main__':
     model = main.Main(practie_name="resnet50-80-128-100-hsv",
-                      model_name="vgg16",
+                      model_name="resnet50",
                       image_size_x=80,
                       image_size_y=80)
     model.images_create()
