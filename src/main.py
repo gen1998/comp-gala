@@ -15,8 +15,9 @@ import src.model as model
 
 
 class Main(model.Model_CNN):
-    def __init__(self, practie_name, model_name, image_size_x=80, image_size_y=80, num_classes=4):
-        super(Main, self).__init__(image_size_x, image_size_y, num_classes, model_name)
+    def __init__(self, practie_name, model_name, image_size_x=80, image_size_y=80,
+                 num_classes=4, t_learning=False, fine_tuning=False):
+        super(Main, self).__init__(image_size_x, image_size_y, num_classes, model_name, t_learning, fine_tuning)
         self.practice_name = practie_name
         self.num_files = {}
         self.num_classes = num_classes
@@ -120,10 +121,25 @@ class Main(model.Model_CNN):
                                            max_queue_size=32,
                                            callbacks=[annealer, es_cb])
 
-        self.model.save_weights('src/result/weights/{}_weights.h5'.format(self.practice_name))
+        #self.model.save_weights('src/result/weights/{}_weights.h5'.format(self.practice_name))
 
         with open("src/result/history/{}_history.pickle".format(self.practice_name), 'wb') as fp:
             pickle.dump(history.history, fp)
+
+        submission = pd.read_csv("dataset/sample_submission.csv", index_col=0)
+        filenames = list(submission["Image"].values)
+
+        for name in filenames:
+            image = Image.open("dataset/test/"+name)
+            image = image.convert("RGB")
+            image = np.asarray(image, dtype=np.float32)
+            image = cv2.resize(image, (self.image_size_x, self.image_size_y))
+            image /= 255
+            image = np.expand_dims(image, 0)
+            result = np.array(self.model.predict(image, batch_size=1, verbose=0)[0])
+            submission.loc[submission["Image"] == name, "Class"] = self.data_classes[np.argmax(result)]
+
+        submission.to_csv("src/result/submission/{}_submission.csv".format(self.practice_name), index=False)
 
     def test(self, weights):
         submission = pd.read_csv("dataset/sample_submission.csv", index_col=0)

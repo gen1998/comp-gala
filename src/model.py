@@ -7,10 +7,12 @@ from keras.applications.xception import Xception
 
 
 class Model_CNN():
-    def __init__(self, image_size_x, image_size_y, num_classes, model_name):
+    def __init__(self, image_size_x, image_size_y, num_classes, model_name, t_learning=False, fine_tuning=False):
         self.image_size_x = image_size_x
         self.image_size_y = image_size_y
         self.num_classes = num_classes
+        self.t_learning = t_learning
+        self.fine_tuning = fine_tuning
         if model_name == "vgg16":
             self.model = self.VGG16()
         elif model_name == "mnist_997":
@@ -117,11 +119,18 @@ class Model_CNN():
     def resnet50(self):
         input_tensor = Input(shape=(self.image_size_x, self.image_size_y, 3))
 
-        Resnet50 = ResNet50(include_top=False, weights=None ,input_tensor=input_tensor)
+        if self.fine_tuning or self.transfer_learning:
+            Resnet50 = ResNet50(include_top=False, weights="imagenet" ,input_tensor=input_tensor)
+        else:
+            Resnet50 = ResNet50(include_top=False, weights=None ,input_tensor=input_tensor)
+
         top_model = Sequential()
         top_model.add(Flatten(input_shape=Resnet50.output_shape[1:]))
         top_model.add(Dense(self.num_classes, activation='softmax'))
         model = Model(input=Resnet50.input, output=top_model(Resnet50.output))
+
+        if self.transfer_learning:
+            Resnet50.trainable = False
 
         model.compile(loss='categorical_crossentropy',
                       optimizer="adam",
