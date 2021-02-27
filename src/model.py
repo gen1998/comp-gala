@@ -13,14 +13,18 @@ class Model_CNN():
         self.num_classes = num_classes
         self.t_learning = t_learning
         self.fine_tuning = fine_tuning
+        self.model_name = model_name
+        self.model = self.select_model(model_name)
+
+    def select_model(self, model_name):
         if model_name == "vgg16":
-            self.model = self.VGG16()
+            return self.VGG16()
         elif model_name == "mnist_997":
-            self.model = self.mnist_997()
+            return self.mnist_997()
         elif model_name == "resnet50":
-            self.model = self.resnet50()
+            return self.resnet50()
         elif model_name == "xception":
-            self.model = self.xception()
+            return self.xception()
 
     def VGG16(self):
         input_shape = (self.image_size_x, self.image_size_y, 3)
