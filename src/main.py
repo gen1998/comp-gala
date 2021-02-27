@@ -152,7 +152,6 @@ class Main(model.Model_CNN):
         sub_filenames = list(submission["Image"].values)
         self.result = np.zeros((len(sub_filenames), self.num_classes))
 
-        train_generator, validation_generator = self.generator()
         train_csv = pd.read_csv("dataset/train.csv", index_col=0)
         s_magnification = 0.6  # 彩度(Saturation)の倍率
         v_magnification = 0.6  # 明度(Value)の倍率
@@ -202,6 +201,7 @@ class Main(model.Model_CNN):
             print("train_num : ", train_num)
             print("valid_num : ", valid_num)
 
+            train_generator, validation_generator = self.generator()
             history = self.model.fit_generator(train_generator,
                                                validation_data=validation_generator,
                                                verbose=1,
