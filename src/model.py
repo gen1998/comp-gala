@@ -119,7 +119,7 @@ class Model_CNN():
     def resnet50(self):
         input_tensor = Input(shape=(self.image_size_x, self.image_size_y, 3))
 
-        if self.fine_tuning or self.transfer_learning:
+        if self.fine_tuning or self.t_learning:
             Resnet50 = ResNet50(include_top=False, weights="imagenet" ,input_tensor=input_tensor)
         else:
             Resnet50 = ResNet50(include_top=False, weights=None ,input_tensor=input_tensor)
@@ -129,7 +129,7 @@ class Model_CNN():
         top_model.add(Dense(self.num_classes, activation='softmax'))
         model = Model(input=Resnet50.input, output=top_model(Resnet50.output))
 
-        if self.transfer_learning:
+        if self.t_learning:
             Resnet50.trainable = False
 
         model.compile(loss='categorical_crossentropy',
