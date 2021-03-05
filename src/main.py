@@ -15,9 +15,9 @@ import src.model as model
 
 
 class Main(model.Model_CNN):
-    def __init__(self, practie_name, model_name, image_height=235, image_width=80,
+    def __init__(self, practie_name, model_name, img_height=235, img_width=80,
                  num_classes=4, t_learning=False, fine_tuning=False):
-        super(Main, self).__init__(image_height, image_width, num_classes, model_name, t_learning, fine_tuning)
+        super(Main, self).__init__(img_height, img_width, num_classes, model_name, t_learning, fine_tuning)
         self.practice_name = practie_name
         self.num_files = {}
         self.num_classes = num_classes
@@ -44,7 +44,7 @@ class Main(model.Model_CNN):
         s_magnification = 0.6  # 彩度(Saturation)の倍率
         v_magnification = 0.6  # 明度(Value)の倍率
 
-        transform = A.Compose([A.PadIfNeeded(self.image_height, self.image_width)])
+        transform = A.Compose([A.PadIfNeeded(self.img_height, self.img_width)])
 
         for name in imgs:
             img = cv2.imread(os.path.join("dataset/Train_Images/", name))
@@ -78,14 +78,14 @@ class Main(model.Model_CNN):
 
         train_generator = datagen.flow_from_directory(
             os.path.join("dataset/train"),
-            target_size=(self.image_height, self.image_width),
+            target_size=(self.img_height, self.img_width),
             batch_size=self.batch_size,
             classes=self.data_classes,
             class_mode="categorical")
 
         validation_generator = datagen.flow_from_directory(
             os.path.join("dataset/validation"),
-            target_size=(self.image_height, self.image_width),
+            target_size=(self.img_height, self.img_width),
             batch_size=self.batch_size,
             classes=self.data_classes,
             class_mode="categorical")
@@ -138,7 +138,7 @@ class Main(model.Model_CNN):
             image = Image.open("dataset/test/"+name)
             image = image.convert("RGB")
             image = np.asarray(image, dtype=np.float32)
-            image = cv2.resize(image, (self.image_height, self.image_width))
+            image = cv2.resize(image, (self.img_height, self.img_width))
             image /= 255
             image = np.expand_dims(image, 0)
             result = np.array(self.model.predict(image, batch_size=1, verbose=0)[0])
@@ -177,7 +177,7 @@ class Main(model.Model_CNN):
             for name in train_imgs:
                 img = cv2.imread(os.path.join("dataset/Train_Images/", name))
                 img_class = train_csv.loc[name][0]
-                img = cv2.resize(img, (self.image_height, self.image_width))
+                img = cv2.resize(img, (self.img_height, self.img_width))
                 cv2.imwrite(os.path.join("dataset/train", img_class, name), img)
                 cv2.imwrite(os.path.join("dataset/train", img_class, "f_"+name), cv2.flip(img, 1))
 
@@ -192,7 +192,7 @@ class Main(model.Model_CNN):
             for name in val_imgs:
                 img = cv2.imread(os.path.join("dataset/Train_Images/", name))
                 img_class = train_csv.loc[name][0]
-                img = cv2.resize(img, (self.image_height, self.image_width))
+                img = cv2.resize(img, (self.img_height, self.img_width))
                 cv2.imwrite(os.path.join("dataset/validation", img_class, name), img)
 
             train_num = 0
@@ -220,7 +220,7 @@ class Main(model.Model_CNN):
                 image = Image.open("dataset/test/"+name)
                 image = image.convert("RGB")
                 image = np.asarray(image, dtype=np.float32)
-                image = cv2.resize(image, (self.image_height, self.image_width))
+                image = cv2.resize(image, (self.img_height, self.img_width))
                 image /= 255
                 image = np.expand_dims(image, 0)
                 self.result[i] += np.array(self.model.predict(image, batch_size=1, verbose=0)[0])

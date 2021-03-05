@@ -3,8 +3,8 @@ import src.main as main
 if __name__ == '__main__':
     model = main.Main(practie_name="resnet50-finetuning-r-test",
                       model_name="resnet50",
-                      image_height=235,
-                      image_width=80,
+                      img_height=235,
+                      img_width=80,
                       t_learning=False,
                       fine_tuning=True)
 

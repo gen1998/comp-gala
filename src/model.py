@@ -7,9 +7,9 @@ from keras import optimizers
 
 
 class Model_CNN():
-    def __init__(self, image_height, image_width, num_classes, model_name, t_learning=False, fine_tuning=False):
-        self.image_height = image_height
-        self.image_width = image_width
+    def __init__(self, img_height, img_width, num_classes, model_name, t_learning=False, fine_tuning=False):
+        self.img_height = img_height
+        self.img_width = img_width
         self.num_classes = num_classes
         self.t_learning = t_learning
         self.fine_tuning = fine_tuning
@@ -27,7 +27,7 @@ class Model_CNN():
             return self.xception()
 
     def VGG16(self):
-        input_shape = (self.image_height, self.image_width, 3)
+        input_shape = (self.img_height, self.img_width, 3)
         model = Sequential()
         model.add(Conv2D(filters=64, kernel_size=(3,3), strides=(1,1), padding='same', input_shape=input_shape, name='block1_conv1'))
         model.add(BatchNormalization(name='bn1'))
@@ -89,7 +89,7 @@ class Model_CNN():
 
     def mnist_997(self):
         model = Sequential()
-        input_shape = (self.image_height, self.image_width, 3)
+        input_shape = (self.img_height, self.img_width, 3)
 
         model.add(Conv2D(32, kernel_size = 3, activation='relu', input_shape = input_shape))
         model.add(BatchNormalization())
@@ -143,7 +143,7 @@ class Model_CNN():
         return top_model
 
     def xception(self):
-        input_tensor = Input(shape=(self.image_height, self.image_width, 3))
+        input_tensor = Input(shape=(self.img_height, self.img_width, 3))
 
         xcep = Xception(include_top=False, weights=None ,input_tensor=input_tensor)
         top_model = Sequential()
