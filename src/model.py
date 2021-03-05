@@ -1,15 +1,15 @@
-import keras
 from keras.models import Sequential, Model
 from keras.layers import Conv2D, MaxPooling2D
 from keras.layers import Activation, Dropout, Flatten, Dense, BatchNormalization, Input
 from keras.applications.resnet50 import ResNet50
 from keras.applications.xception import Xception
+from keras import optimizers
 
 
 class Model_CNN():
-    def __init__(self, image_size_x, image_size_y, num_classes, model_name, t_learning=False, fine_tuning=False):
-        self.image_size_x = image_size_x
-        self.image_size_y = image_size_y
+    def __init__(self, image_height, image_width, num_classes, model_name, t_learning=False, fine_tuning=False):
+        self.image_height = image_height
+        self.image_width = image_width
         self.num_classes = num_classes
         self.t_learning = t_learning
         self.fine_tuning = fine_tuning
@@ -27,7 +27,7 @@ class Model_CNN():
             return self.xception()
 
     def VGG16(self):
-        input_shape = (self.image_size_x, self.image_size_y, 3)
+        input_shape = (self.image_height, self.image_width, 3)
         model = Sequential()
         model.add(Conv2D(filters=64, kernel_size=(3,3), strides=(1,1), padding='same', input_shape=input_shape, name='block1_conv1'))
         model.add(BatchNormalization(name='bn1'))
@@ -89,7 +89,7 @@ class Model_CNN():
 
     def mnist_997(self):
         model = Sequential()
-        input_shape = (self.image_size_x, self.image_size_y, 3)
+        input_shape = (self.image_height, self.image_width, 3)
 
         model.add(Conv2D(32, kernel_size = 3, activation='relu', input_shape = input_shape))
         model.add(BatchNormalization())
@@ -120,30 +120,30 @@ class Model_CNN():
 
         return model
 
-    def resnet50(self):
-        input_tensor = Input(shape=(self.image_size_x, self.image_size_y, 3))
+    def resnet50(self, fine_tuning=False, t_learning=False):
+        input_tensor = Input(shape=(self.img_height, self.img_width, 3))
 
-        if self.fine_tuning or self.t_learning:
+        if fine_tuning or t_learning:
             Resnet50 = ResNet50(include_top=False, weights="imagenet" ,input_tensor=input_tensor)
         else:
             Resnet50 = ResNet50(include_top=False, weights=None ,input_tensor=input_tensor)
 
         top_model = Sequential()
         top_model.add(Flatten(input_shape=Resnet50.output_shape[1:]))
+        top_model.add(Dense(256, activation='relu'))
+        top_model.add(Dropout(0.5))
         top_model.add(Dense(self.num_classes, activation='softmax'))
-        model = Model(input=Resnet50.input, output=top_model(Resnet50.output))
 
-        if self.t_learning:
+        if t_learning:
             Resnet50.trainable = False
 
-        model.compile(loss='categorical_crossentropy',
-                      optimizer="adam",
-                      metrics=['accuracy'])
+        top_model = Model(Resnet50.input, top_model(Resnet50.output))
+        top_model.compile(loss='categorical_crossentropy',optimizer=optimizers.SGD(lr=1e-3, momentum=0.9),metrics=['accuracy'])
 
-        return model
+        return top_model
 
     def xception(self):
-        input_tensor = Input(shape=(self.image_size_x, self.image_size_y, 3))
+        input_tensor = Input(shape=(self.image_height, self.image_width, 3))
 
         xcep = Xception(include_top=False, weights=None ,input_tensor=input_tensor)
         top_model = Sequential()
