@@ -108,7 +108,7 @@ class Main(model.Model_CNN):
         print("train_num : ", train_num)
         print("valid_num : ", valid_num)
 
-        annealer = LearningRateScheduler(lambda x: 1e-3 * 0.95 ** x)
+        # annealer = LearningRateScheduler(lambda x: 1e-3 * 0.95 ** x)
         es_cb = keras.callbacks.EarlyStopping(monitor='val_accuracy',
                                               min_delta=0.01,
                                               patience=20,
@@ -124,7 +124,7 @@ class Main(model.Model_CNN):
                                            epochs=self.epoch_size,
                                            workers=32,
                                            max_queue_size=32,
-                                           callbacks=[annealer, es_cb])
+                                           callbacks=[es_cb])
 
         #self.model.save_weights('src/result/weights/{}_weights.h5'.format(self.practice_name))
 

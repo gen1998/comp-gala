@@ -120,10 +120,10 @@ class Model_CNN():
 
         return model
 
-    def resnet50(self, fine_tuning=False, t_learning=False):
+    def resnet50(self):
         input_tensor = Input(shape=(self.img_height, self.img_width, 3))
 
-        if fine_tuning or t_learning:
+        if self.fine_tuning or self.t_learning:
             Resnet50 = ResNet50(include_top=False, weights="imagenet" ,input_tensor=input_tensor)
         else:
             Resnet50 = ResNet50(include_top=False, weights=None ,input_tensor=input_tensor)
@@ -134,7 +134,7 @@ class Model_CNN():
         top_model.add(Dropout(0.5))
         top_model.add(Dense(self.num_classes, activation='softmax'))
 
-        if t_learning:
+        if self.t_learning:
             Resnet50.trainable = False
 
         top_model = Model(Resnet50.input, top_model(Resnet50.output))
