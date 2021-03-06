@@ -111,7 +111,7 @@ class Main(model.Model_CNN):
         # annealer = LearningRateScheduler(lambda x: 1e-3 * 0.95 ** x)
         es_cb = keras.callbacks.EarlyStopping(monitor='val_accuracy',
                                               min_delta=0.01,
-                                              patience=40,
+                                              patience=20,
                                               verbose=0,
                                               mode='auto',
                                               restore_best_weights=True)
