@@ -3,6 +3,7 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras.layers import Activation, Dropout, Flatten, Dense, BatchNormalization, Input, GlobalAveragePooling2D
 from keras.applications.resnet50 import ResNet50
 from keras.applications.xception import Xception
+from efficientnet.keras import EfficientNetB7
 from keras import optimizers
 
 
@@ -25,6 +26,8 @@ class Model_CNN():
             return self.resnet50()
         elif model_name == "xception":
             return self.xception()
+        elif model_name == "efficientnet":
+            return self.Efficientnet()
 
     def VGG16(self):
         input_shape = (self.img_height, self.img_width, 3)
@@ -182,5 +185,27 @@ class Model_CNN():
                 optimizer=optimizers.SGD(lr=5*1e-4, momentum=0.9),
                 metrics=['accuracy']
             )
+
+        return model
+
+    def Efficientnet(self):
+        input_tensor = Input(shape=(self.img_height, self.img_width, 3))
+
+        if self.fine_tuning or self.t_learning:
+            base_model = EfficientNetB7(include_top=False, weights="imagenet" ,input_tensor=input_tensor)
+        else:
+            base_model = EfficientNetB7(include_top=False, weights=None ,input_tensor=input_tensor)
+
+        x = base_model.output
+        x = GlobalAveragePooling2D()(x)
+        x = Dense(512, activation='relu')(x)
+        predictions = Dense(self.num_classes, activation='softmax')(x)
+
+        model = Model(base_model.input, predictions)
+        model.compile(
+            loss='categorical_crossentropy',
+            optimizer=optimizers.SGD(lr=1e-3, momentum=0.9),
+            metrics=['accuracy']
+        )
 
         return model
