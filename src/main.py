@@ -138,7 +138,7 @@ class Main(model.Model_CNN):
             image = Image.open("dataset/test/"+name)
             image = image.convert("RGB")
             image = np.asarray(image, dtype=np.float32)
-            image = cv2.resize(image, (self.img_height, self.img_width))
+            image = cv2.resize(image, (self.img_width, self.img_height))
             image /= 255
             image = np.expand_dims(image, 0)
             result = np.array(self.model.predict(image, batch_size=1, verbose=0)[0])
