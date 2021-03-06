@@ -158,7 +158,7 @@ class Model_CNN():
         model = Model(xcep.input, predictions)
         model.compile(
             loss='categorical_crossentropy',
-            optimizer='rmsprop',
+            optimizer=optimizers.SGD(lr=1e-4, momentum=0.9),
             metrics=['accuracy']
         )
 
