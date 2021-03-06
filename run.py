@@ -1,7 +1,7 @@
 import src.main as main
 
 if __name__ == '__main__':
-    model = main.Main(practie_name="efficientnetb7-1",
+    model = main.Main(practie_name="efficientnetb5-1",
                       model_name="efficientnet",
                       img_height=235,
                       img_width=80,

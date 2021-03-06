@@ -3,7 +3,7 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras.layers import Activation, Dropout, Flatten, Dense, BatchNormalization, Input, GlobalAveragePooling2D
 from keras.applications.resnet50 import ResNet50
 from keras.applications.xception import Xception
-from efficientnet.keras import EfficientNetB7
+from efficientnet.keras import EfficientNetB5
 from keras import optimizers
 
 
@@ -192,9 +192,9 @@ class Model_CNN():
         input_tensor = Input(shape=(self.img_height, self.img_width, 3))
 
         if self.fine_tuning or self.t_learning:
-            base_model = EfficientNetB7(include_top=False, weights="imagenet" ,input_tensor=input_tensor)
+            base_model = EfficientNetB5(include_top=False, weights="imagenet" ,input_tensor=input_tensor)
         else:
-            base_model = EfficientNetB7(include_top=False, weights=None ,input_tensor=input_tensor)
+            base_model = EfficientNetB5(include_top=False, weights=None ,input_tensor=input_tensor)
 
         x = base_model.output
         x = GlobalAveragePooling2D()(x)
