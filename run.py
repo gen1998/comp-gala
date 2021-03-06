@@ -1,8 +1,8 @@
 import src.main as main
 
 if __name__ == '__main__':
-    model = main.Main(practie_name="resnet50-fine_tuning-4",
-                      model_name="resnet50",
+    model = main.Main(practie_name="efficientnetb7-1",
+                      model_name="efficientnet",
                       img_height=235,
                       img_width=80,
                       t_learning=False,
