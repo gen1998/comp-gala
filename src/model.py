@@ -150,16 +150,27 @@ class Model_CNN():
         else:
             xcep = Xception(include_top=False, weights=None ,input_tensor=input_tensor)
 
+        if self.t_learning:
+            xcep.trainable = False
+
         x = xcep.output
         x = GlobalAveragePooling2D()(x)
         x = Dense(512, activation='relu')(x)
         predictions = Dense(self.num_classes, activation='softmax')(x)
 
         model = Model(xcep.input, predictions)
-        model.compile(
-            loss='categorical_crossentropy',
-            optimizer=optimizers.SGD(lr=1e-4, momentum=0.9),
-            metrics=['accuracy']
-        )
+
+        if self.t_learning:
+            model.compile(
+                loss='categorical_crossentropy',
+                optimizer='rmsprop',
+                metrics=['accuracy']
+            )
+        else:
+            model.compile(
+                loss='categorical_crossentropy',
+                optimizer=optimizers.SGD(lr=1e-4, momentum=0.9),
+                metrics=['accuracy']
+            )
 
         return model
