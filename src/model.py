@@ -1,6 +1,6 @@
 from keras.models import Sequential, Model
 from keras.layers import Conv2D, MaxPooling2D
-from keras.layers import Activation, Dropout, Flatten, Dense, BatchNormalization, Input
+from keras.layers import Activation, Dropout, Flatten, Dense, BatchNormalization, Input, GlobalAveragePooling2D
 from keras.applications.resnet50 import ResNet50
 from keras.applications.xception import Xception
 from keras import optimizers
@@ -145,14 +145,21 @@ class Model_CNN():
     def xception(self):
         input_tensor = Input(shape=(self.img_height, self.img_width, 3))
 
-        xcep = Xception(include_top=False, weights=None ,input_tensor=input_tensor)
-        top_model = Sequential()
-        top_model.add(Flatten(input_shape=xcep.output_shape[1:]))
-        top_model.add(Dense(self.num_classes, activation='softmax'))
-        model = Model(input=xcep.input, output=top_model(xcep.output))
+        if self.fine_tuning or self.t_learning:
+            xcep = Xception(include_top=False, weights="imagenet" ,input_tensor=input_tensor)
+        else:
+            xcep = Xception(include_top=False, weights=None ,input_tensor=input_tensor)
 
-        model.compile(loss='categorical_crossentropy',
-                      optimizer="adam",
-                      metrics=['accuracy'])
+        x = xcep.output
+        x = GlobalAveragePooling2D()(x)
+        x = Dense(512, activation='relu')(x)
+        predictions = Dense(self.num_classes, activation='softmax')(x)
+
+        model = Model(xcep.input, predictions)
+        model.compile(
+            loss='categorical_crossentropy',
+            optimizer='rmsprop',
+            metrics=['accuracy']
+        )
 
         return model
