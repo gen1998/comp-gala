@@ -128,18 +128,28 @@ class Model_CNN():
         else:
             Resnet50 = ResNet50(include_top=False, weights=None ,input_tensor=input_tensor)
 
+        if self.t_learning:
+            Resnet50.trainable = False
+
         top_model = Sequential()
         top_model.add(Flatten(input_shape=Resnet50.output_shape[1:]))
         top_model.add(Dense(256, activation='relu'))
         top_model.add(Dropout(0.5))
         top_model.add(Dense(self.num_classes, activation='softmax'))
+        top_model = Model(Resnet50.input, top_model(Resnet50.output))
 
         if self.t_learning:
-            Resnet50.trainable = False
-
-        top_model = Model(Resnet50.input, top_model(Resnet50.output))
-        top_model.compile(loss='categorical_crossentropy',optimizer=optimizers.SGD(lr=1e-3, momentum=0.9),metrics=['accuracy'])
-
+            top_model.compile(
+                loss='categorical_crossentropy',
+                optimizer='rmsprop',
+                metrics=['accuracy']
+            )
+        else:
+            top_model.compile(
+                loss='categorical_crossentropy',
+                optimizer=optimizers.SGD(lr=1e-4, momentum=0.9),
+                metrics=['accuracy']
+            )
         return top_model
 
     def xception(self):
