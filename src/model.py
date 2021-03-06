@@ -147,7 +147,7 @@ class Model_CNN():
         else:
             top_model.compile(
                 loss='categorical_crossentropy',
-                optimizer=optimizers.SGD(lr=1e-3, momentum=0.9),
+                optimizer=optimizers.SGD(lr=1e-4, momentum=0.9),
                 metrics=['accuracy']
             )
         return top_model
@@ -179,7 +179,7 @@ class Model_CNN():
         else:
             model.compile(
                 loss='categorical_crossentropy',
-                optimizer=optimizers.SGD(lr=1e-3, momentum=0.9),
+                optimizer=optimizers.SGD(lr=5*1e-4, momentum=0.9),
                 metrics=['accuracy']
             )
 
