@@ -1,8 +1,8 @@
 import src.main as main
 
 if __name__ == '__main__':
-    model = main.Main(practie_name="xception-fine_tuning",
-                      model_name="xception",
+    model = main.Main(practie_name="resnet50-fine_tuning-s",
+                      model_name="resnet50",
                       img_height=235,
                       img_width=80,
                       t_learning=False,
