@@ -142,7 +142,7 @@ class Main(model.Model_CNN):
             image /= 255
             image = np.expand_dims(image, 0)
             result = np.array(self.model.predict(image, batch_size=1, verbose=0)[0])
-            submission.loc[submission["Image"] == name, "Class"] = self.data_classes[np.argmax(result)]
+            submission.loc[submission["Image"] == name, "Class"] = result #self.data_classes[np.argmax(result)]
 
         submission.to_csv("src/result/submission/{}_submission.csv".format(self.practice_name), index=False)
 
