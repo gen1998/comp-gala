@@ -111,7 +111,7 @@ class Main(model.Model_CNN):
         # annealer = LearningRateScheduler(lambda x: 1e-3 * 0.95 ** x)
         es_cb = keras.callbacks.EarlyStopping(monitor='val_accuracy',
                                               min_delta=0.01,
-                                              patience=20,
+                                              patience=40,
                                               verbose=0,
                                               mode='auto',
                                               restore_best_weights=True)
@@ -139,10 +139,14 @@ class Main(model.Model_CNN):
             img = cv2.imread(os.path.join("dataset/test/", name))
             img_ = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             t_img  = transform(image=img_)["image"]
-            t_img  = transform(image=img_)["image"]
+            t_img_ = cv2.flip(t_img, 1)
             t_img = t_img/255
+            t_img_ = t_img_/255
             t_img = np.expand_dims(t_img, 0)
+            t_img_ = np.expand_dims(t_img_, 0)
             result = np.array(self.model.predict(t_img, batch_size=1, verbose=0)[0])
+            result += np.array(self.model.predict(t_img_, batch_size=1, verbose=0)[0])
+
             submission.loc[submission["Image"] == name, "Class"] = [result] #self.data_classes[np.argmax(result)]
 
         submission.to_csv("src/result/submission/{}_submission.csv".format(self.practice_name), index=False)
