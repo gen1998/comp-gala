@@ -135,14 +135,15 @@ class Main(model.Model_CNN):
         filenames = list(submission["Image"].values)
 
         for name in filenames:
-            image = Image.open("dataset/test/"+name)
-            image = image.convert("RGB")
-            image = np.asarray(image, dtype=np.float32)
-            image = cv2.resize(image, (self.img_width, self.img_height))
-            image /= 255
-            image = np.expand_dims(image, 0)
-            result = np.array(self.model.predict(image, batch_size=1, verbose=0)[0])
-            submission.loc[submission["Image"] == name, "Class"] = result #self.data_classes[np.argmax(result)]
+            transform = A.Compose([A.PadIfNeeded(self.img_height, self.img_width)])
+            img = cv2.imread(os.path.join("dataset/test/", name))
+            img_ = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            t_img  = transform(image=img_)["image"]
+            t_img  = transform(image=img_)["image"]
+            t_img = t_img/255
+            t_img = np.expand_dims(t_img, 0)
+            result = np.array(self.model.predict(t_img, batch_size=1, verbose=0)[0])
+            submission.loc[submission["Image"] == name, "Class"] = [result] #self.data_classes[np.argmax(result)]
 
         submission.to_csv("src/result/submission/{}_submission.csv".format(self.practice_name), index=False)
 
